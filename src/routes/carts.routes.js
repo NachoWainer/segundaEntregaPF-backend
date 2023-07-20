@@ -19,7 +19,7 @@ router.post('/',async function(req,res){
 router.get('/:cid',async function(req,res){
   let id = parseInt(req.params.cid)
   try {
-    const cart = await cartsModel.findById(id).populate("products")
+    const cart = await cartsModel.findById(id).populate("products").lean()
     res.send({status:"success",message:"Carrito obtenido correctamente",value:cart})
     
   } catch (error) {
@@ -37,7 +37,7 @@ router.post('/:cid/product/:pid',async function(req,res){
   res.send({status:status,message:message,value:data})
 })
 
-router.delete('/:cid/product/:pid',async function(req,res){ //implementar
+router.delete('/:cid/product/:pid',async function(req,res){ 
   let CartId = parseInt(req.params.cid)
   let ProductId = parseInt(req.params.pid)
   const {status,message,data} = await cartHandler.deleteProductFromCartIdById(CartId,ProductId)
@@ -45,24 +45,48 @@ router.delete('/:cid/product/:pid',async function(req,res){ //implementar
   res.send({status:status,message:message,value:data})
 })
 
-router.put ('/:cid',async function(req,res){//implementar
+router.put ('/:cid',async function(req,res){
   let {productos} = req.body 
-  productos.forEach(async producto => {
-    await cartsModel.updateOne()
-
-    
-  });
   let CartId = parseInt(req.params.cid)
-
-  const {status,message,data} = await cartHandler.updateProductsOfCartId(CartId)
-
-  res.send({status:status,message:message,value:data})
+  try {
+    await cartsModel.findByIdAndUpdate(CartId,{products:productos})
+    res.send({status:"success",message:"Products updated",value:[]})
+  } catch (error) {
+    res.send({status:"error",message:error,value:[]})
+  }
+ 
+  
 })
 
-router.delete('/:cid',async function(req,res){//implementar
+router.put ('/:cid/products/:pid',async function(req,res){
+  let {cantidad} = req.body 
+  cantidad = parseInt(cantidad)
   let CartId = parseInt(req.params.cid)
-  const {status,message,data} = await cartHandler.deleteProductsFromCartId(CartId)
+  let productId = parseInt(req.params.pid)
+    try {
+    let cart = await cartsModel.findById(CartId)
+    let index =cart.products.findIndex(element => element.id === productId)
+      if (index === -1) return res.send({status:"error",message:"el producto no esta en el carrito",value:[]})
+      cart.products[index].quantity += cantidad
+      await cart.save()
+    res.send({status:"success",message:"Products updated",value:[]})
+  } catch (error) {
+    res.send({status:"error",message:error,value:[]})
+  }
+ 
+  
+})
 
-  res.send({status:status,message:message,value:data})
+router.delete('/:cid',async function(req,res){
+  let CartId = parseInt(req.params.cid)
+  try {
+    await cartsModel.deleteMany({})
+    res.send({status:"success",message:"se eliminaron todos los productos del carrito " + `${CartId}`,value:[]})
+  } catch (error) {
+    res.send({status:"error",message:error,value:[]})
+    
+  }
+  
+
 })
 export default router

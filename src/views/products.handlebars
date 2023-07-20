@@ -1,6 +1,34 @@
 <div>
   <h1>Productos disponibles</h1>
+
   {{#each payload}}
+    <p>{{id}}</p>
+    <p>{{title}}</p>
+    <p>{{category}}</p>
+    <p>{{stock}}</p>
+    <p>{{price}}</p>
+    <a href={{nextLink}}><button>Add to cart</button></a>
+    <hr/>
+
+    {{/each}}
+    
+ 
+    {{#if hasPrevPage}}
+    <a href="/products?{{prevLink}}"><button>Anterior</button></a>
+    {{/if}}
+     {{#if hasNextPage}}
+    <a href="/products?{{nextLink}}"><button>Siguiente</button></a>
+    {{/if}}
+  
+</div>
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/index.js"></script>
+<!--
+
+{{#each payload}}
     <p>{{id}}</p>
     <p>{{title}}</p>
     <p>{{category}}</p>
@@ -14,7 +42,7 @@
      {{#if hasNextPage}}
     <a href={{nextLink}}><button>Siguiente</button></a>
     {{/if}}
-   
-</div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="js/index.js"></script>
+
+
+
+-->

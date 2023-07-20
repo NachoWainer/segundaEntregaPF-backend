@@ -1,71 +1,16 @@
 import { Router } from "express";
 import { ProductManager } from "../dao/dbManagers/productManager.js";
+import { productsModel } from "../dao/models/products.js";
 
 
 const router = Router();
 const productHandler = new ProductManager();
 
 router.get('/',async(req,res)=>{
-    const pagina=(req.query.page != undefined) ? req.query.page : 1
-    const limite = (req.query.limit != undefined) ? req.query.limit : 10 
-    const sort = null
-    let sortParam = req.query.sort
-    if (sortParam != undefined){
-        if (sortParam == "asc") sort = 1
-        if (sortParam == "desc") sort = -1
-    }  
-    const query = null
-    const queryParam = (req.query.query != undefined) ? req.query.query : null 
-    if  (queryParam != undefined){
-        if (queryParam == "disponibilidad") query = {stock: {$gt: 0}}
-        query = {categoria: {$eq: queryParam}}
-    }  
-    
-try {
-    const{docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,page} = await productsModel.paginate({},{limit:limite,pagina,sort:sort,query,lean:true})
-    const payload = docs
-    const status = "success"
-    const nextLink=hasNextPage ? `/?page=${nextPage}` : null
-    const prevLink= hasPrevPage ? `/?page=${prevPage}` : null
-
-
-     return res.send({
-        status,
-        payload,
-        totalPages,
-        prevPage,
-        nextPage,
-        page,
-        hasPrevPage,
-        hasNextPage,
-        nextLink,
-        prevLink   
-        
-
-    })
-    
-} catch (error) {
-    const payload = docs
-    const status = "error"
-    const nextLink=hasNextPage ? `/?page=${nextPage}` : " "
-    const prevLink= hasPrevPage ? `/?page=${prevPage}` : " "
-
-
-     return res.send({
-        status,
-        payload,
-        totalPages,
-        prevPage,
-        nextPage,
-        page,
-        hasPrevPage,
-        hasNextPage,
-        nextLink,
-        prevLink  
-    
-    })
-}
-    
+    const limit = req.query.limit
+    const data = await productHandler.getProducts()
+    if (!limit) return res.send(data)
+    else return res.send(data.slice(0,limit))
     
 })
 

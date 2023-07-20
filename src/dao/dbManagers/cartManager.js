@@ -56,7 +56,7 @@ deleteProductFromCartIdById = async(CartId,ProductId)=>{
             let status, message
 
             if (product !== undefined){ 
-            await cartsModel.updateOne({id: CartId},{$pull: {products:{id: productId}}})
+            await cartsModel.updateOne({id: CartId},{$pull: {products:{id: ProductId}}})
             status = 202
             message = "producto eliminado"
             }

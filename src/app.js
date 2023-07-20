@@ -45,6 +45,11 @@ global.emitRealTimeProducts = async () => {
     socketServer.emit('realTimeProducts', data);
   };
 
+  global.emitProducts = async (data) => {
+      
+   socketServer.emit('products', data);
+  }; 
+
 socketServer.on('connection',async (socket) =>{
     console.log("Inicio la comunicación")
     const productos = await productsModel.find().lean();
