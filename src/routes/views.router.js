@@ -2,6 +2,7 @@
 
 import express from 'express'
 import { productsModel } from '../dao/models/products.js';
+import cartsModel from '../dao/models/carts.js';
 
 
 const router= express.Router();
@@ -14,13 +15,23 @@ router.get('/realtimeproducts',(req,res)=>{
     
 
 })
+
 router.get('/chat',async (req,res)=>{
     res.render('chat',{})
 })
-router.get('/carts/:cid',(req,res)=>{
 
- 
-    res.render('carts',{})
+
+router.get('/cart/:cid',async(req,res)=>{
+ let cartId =req.params.cid
+ const cart = await cartsModel.findById(cartId).lean()
+ const products = cart.products
+
+
+ console.log(cart)
+res.render('cart',{
+    cart,
+    products
+})
     
 
 })

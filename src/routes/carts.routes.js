@@ -37,7 +37,7 @@ router.post('/:cid/product/:pid',async function(req,res){
   res.send({status:status,message:message,value:data})
 })
 
-router.delete('/:cid/product/:pid',async function(req,res){ 
+router.delete('/:cid/product/:pid',async function(req,res){ //funciona
   let CartId = parseInt(req.params.cid)
   let ProductId = parseInt(req.params.pid)
   const {status,message,data} = await cartHandler.deleteProductFromCartIdById(CartId,ProductId)
@@ -46,10 +46,14 @@ router.delete('/:cid/product/:pid',async function(req,res){
 })
 
 router.put ('/:cid',async function(req,res){
-  let {productos} = req.body 
-  let CartId = parseInt(req.params.cid)
+  let {products} = req.body
+  
+  
+  
+  
+  let CartId =req.params.cid
   try {
-    await cartsModel.findByIdAndUpdate(CartId,{products:productos})
+    await cartsModel.findByIdAndUpdate(CartId,products)
     res.send({status:"success",message:"Products updated",value:[]})
   } catch (error) {
     res.send({status:"error",message:error,value:[]})
@@ -78,7 +82,7 @@ router.put ('/:cid/products/:pid',async function(req,res){
 })
 
 router.delete('/:cid',async function(req,res){
-  let CartId = parseInt(req.params.cid)
+  let CartId = req.params.cid
   try {
     await cartsModel.deleteMany({})
     res.send({status:"success",message:"se eliminaron todos los productos del carrito " + `${CartId}`,value:[]})
