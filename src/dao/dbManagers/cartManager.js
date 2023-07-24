@@ -52,7 +52,8 @@ deleteProductFromCartIdById = async(CartId,ProductId)=>{
             return {status:404,message:"No hay carrito con ese ID",value:[]}
         }
         else {
-            const product = cart.products.find(e => e.id === ProductId)
+            console.log(cart.products)
+            const product = cart.products.find(e => e._id === ProductId)
             let status, message
 
             if (product !== undefined){ 

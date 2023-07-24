@@ -6,10 +6,6 @@ import mongoosePaginate from  "mongoose-paginate-v2"
 const productsCollection='products'
 
 const productsSchema= mongoose.Schema({
-    id:{
-        type:Number,
-        required:true}
-    ,
     title:{
         type:String,
         required: true

@@ -26,8 +26,6 @@ router.get('/cart/:cid',async(req,res)=>{
  const cart = await cartsModel.findById(cartId).lean()
  const products = cart.products
 
-
- console.log(cart)
 res.render('cart',{
     cart,
     products
