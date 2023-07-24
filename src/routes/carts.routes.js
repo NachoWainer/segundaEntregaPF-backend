@@ -132,27 +132,46 @@ router.put ('/:cid',async function(req,res){
 router.put ('/:cid/products/:pid',async function(req,res){
   let {cantidad} = req.body 
   cantidad = parseInt(cantidad)
-  let CartId = parseInt(req.params.cid)
-  let productId = parseInt(req.params.pid)
-    try {
-    let cart = await cartsModel.findById(CartId)
-    let index =cart.products.findIndex(element => element.id === productId)
-      if (index === -1) return res.send({status:"error",message:"el producto no esta en el carrito",value:[]})
-      cart.products[index].quantity += cantidad
-      await cart.save()
-    res.send({status:"success",message:"Products updated",value:[]})
+  if (cantidad < 0) return res.send({ status: 'error', message: 'cantidad invalida', value: [] })   
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
+  try {
+    const cart = await cartsModel.findById(cartId);
+    if (!cart) {
+      return res.send({ status: "error", message: "Carrito no encontrado" });
+    }
+        let aux = await cartsModel.findOne({ _id: cartId, "products._id": productId});
+        if (aux == null){
+          await cartsModel.updateOne({_id: cartId},{$push:{products:{_id: productId, quantity: cantidad }}})
+          return res.send({ status: 'success', message: 'producto agregado', value: [] })   
+        }
+        else {
+          await cartsModel.updateOne({ _id: cartId, "products._id": productId },{ "products.$.quantity": cantidad })
+        } 
+        
+     
+      return res.send({ status: 'success', message: 'cantidad actualizada', value: [] })    
+
   } catch (error) {
-    res.send({status:"error",message:error,value:[]})
+    console.error(error);
+    res.status(500).send({ message: "Error en el servidor" });
   }
+});
  
   
-})
 
 router.delete('/:cid',async function(req,res){
   let CartId = req.params.cid
   try {
-    await cartsModel.updateOne(CartId,{products:[]}) 
-    res.send({status:"success",message:"se eliminaron todos los productos del carrito " + `${CartId}`,value:[]})
+    const cart = await cartsModel.findById(CartId);
+    if (!cart) {
+
+      return res.send({ status: "error", message: "Carrito no encontrado" });
+    }
+    await cartsModel.updateOne({ _id: CartId},{ $set: { products: [] } })
+
+    res.send({status:"success",message:"se eliminaron todos los productos del carrito ",value:[]})
+
   } catch (error) {
     res.send({status:"error",message:error,value:[]})
     
